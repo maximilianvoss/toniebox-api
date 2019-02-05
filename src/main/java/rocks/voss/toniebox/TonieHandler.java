@@ -51,9 +51,7 @@ public class TonieHandler {
 
         int chapterSize = tonieContentBean.getData().getChapters().length;
         TonieChapterBean chapters[] = new TonieChapterBean[chapterSize + 1];
-        for ( int i = 0 ; i < chapterSize; i++ ) {
-            chapters[i] = tonieContentBean.getData().getChapters()[i];
-        }
+        System.arraycopy(tonieContentBean.getData().getChapters(), 0, chapters, 0, chapterSize);
         chapters[chapterSize] = new TonieChapterBean();
         chapters[chapterSize].setTitle(title);
         chapters[chapterSize].setFile(amazonBean.getUuid());

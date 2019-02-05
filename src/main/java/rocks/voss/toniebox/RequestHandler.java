@@ -102,7 +102,7 @@ public class RequestHandler {
     public void uploadFile(AmazonBean amazonBean, File file) throws IOException {
         PostMethod postMethod = new PostMethod(amazonBean.getUrl().getUrl());
 
-        Part parts[] = {
+        Part[] parts = {
                 new StringPart("key", amazonBean.getUrl().getFields().getKey()),
                 new StringPart("x-amz-algorithm", amazonBean.getUrl().getFields().getXAmzAlgorithm()),
                 new StringPart("x-amz-credential", amazonBean.getUrl().getFields().getXAmzCredential()),
