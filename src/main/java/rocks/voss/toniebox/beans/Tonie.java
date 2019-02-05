@@ -1,4 +1,4 @@
-package rocks.voss.toniebox;
+package rocks.voss.toniebox.beans;
 
 import lombok.Data;
 

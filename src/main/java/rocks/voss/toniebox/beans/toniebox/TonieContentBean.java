@@ -1,10 +1,8 @@
-package rocks.voss.toniebox.beans.amazon;
+package rocks.voss.toniebox.beans.toniebox;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
-import rocks.voss.toniebox.beans.toniebox.TonieMetaData;
-import rocks.voss.toniebox.beans.toniebox.TonieContentDataBean;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +10,6 @@ import java.io.Serializable;
 
 @Data
 public class TonieContentBean implements Serializable {
-
 	private TonieMetaData _meta;
 	private TonieContentDataBean data;
 

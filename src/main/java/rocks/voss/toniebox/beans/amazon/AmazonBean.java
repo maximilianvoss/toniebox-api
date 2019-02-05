@@ -9,7 +9,6 @@ import java.io.Serializable;
 
 @Data
 public class AmazonBean implements Serializable {
-
 	private UrlBean url;
 	private String uuid;
 

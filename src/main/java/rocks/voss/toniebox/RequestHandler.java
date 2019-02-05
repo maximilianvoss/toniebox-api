@@ -9,8 +9,9 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import rocks.voss.toniebox.beans.Tonie;
 import rocks.voss.toniebox.beans.amazon.AmazonBean;
-import rocks.voss.toniebox.beans.amazon.TonieContentBean;
+import rocks.voss.toniebox.beans.toniebox.TonieContentBean;
 import rocks.voss.toniebox.beans.toniebox.TonieUpdateBean;
 
 import java.io.File;
@@ -20,12 +21,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RequestHandler {
+class RequestHandler {
     private HttpClient httpClient = new HttpClient();
     private Cookie[] cookies;
     private String crfToken;
 
-    public void Login(String login, String password) throws IOException {
+    protected void Login(String login, String password) throws IOException {
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.LOGIN_PAGE));
         executeMethod(getMethod);
 
@@ -40,19 +41,7 @@ public class RequestHandler {
         executeMethod(postMethod);
     }
 
-    private void extractCRFToken(HttpMethod method) throws IOException {
-        String response = method.getResponseBodyAsString();
-        if ( response == null ) {
-            return;
-        }
-        Pattern pattern = Pattern.compile("name='csrfmiddlewaretoken' value='(\\w+)'");
-        Matcher matcher = pattern.matcher(response);
-        if (matcher.find()) {
-            crfToken = matcher.group(1);
-        }
-    }
-
-    public List<Tonie> getTonies() throws IOException {
+    protected List<Tonie> getTonies() throws IOException {
         List<Tonie> tonies = new ArrayList<>();
 
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.SUMMARY_PAGE));
@@ -69,37 +58,37 @@ public class RequestHandler {
         return tonies;
     }
 
-    public void getToniePage(Tonie tonie) throws IOException {
+    protected void getToniePage(Tonie tonie) throws IOException {
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.TONIE_PAGE, tonie));
         executeMethod(getMethod);
     }
 
-    public TonieContentBean getTonieDetails(Tonie tonie) throws IOException {
+    protected TonieContentBean getTonieDetails(Tonie tonie) throws IOException {
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.TONIE_CONTENT, tonie));
         executeMethod(getMethod);
         return TonieContentBean.createBean(getMethod.getResponseBodyAsString());
     }
 
-    public void updateTonie(Tonie tonie, TonieUpdateBean updateBean) throws IOException {
+    protected void updateTonie(Tonie tonie, TonieUpdateBean updateBean) throws IOException {
         PutMethod putMethod = new PutMethod(URLBuilder.getTonieUrl(Constants.TONIE_CONTENT, tonie));
         putMethod.setRequestHeader("X-CSRFToken", crfToken);
         putMethod.setRequestEntity(new StringRequestEntity(updateBean.getJson().toString(), "application/json", "UTF-8"));
         executeMethod(putMethod);
     }
 
-    public void changeTonieName(Tonie tonie, String name) throws IOException {
+    protected void changeTonieName(Tonie tonie, String name) throws IOException {
         PostMethod postMethod = new PostMethod(URLBuilder.getTonieUrl(Constants.TONIE_NAME, tonie));
         postMethod.setRequestBody(new NameValuePair[]{new NameValuePair("csrfmiddlewaretoken", crfToken), new NameValuePair("name", name)});
         executeMethod(postMethod);
     }
 
-    public AmazonBean getAmazonCredentials() throws IOException {
+    protected AmazonBean getAmazonCredentials() throws IOException {
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.TONIE_AMAZON_PRE_SIGNED_URL, crfToken));
         executeMethod(getMethod);
         return AmazonBean.createBean(getMethod.getResponseBodyAsString());
     }
 
-    public void uploadFile(AmazonBean amazonBean, File file) throws IOException {
+    protected void uploadFile(AmazonBean amazonBean, File file) throws IOException {
         PostMethod postMethod = new PostMethod(amazonBean.getUrl().getUrl());
 
         Part[] parts = {
@@ -114,6 +103,18 @@ public class RequestHandler {
 
         postMethod.setRequestEntity(new MultipartRequestEntity(parts, postMethod.getParams()));
         executeMethod(postMethod);
+    }
+
+    private void extractCRFToken(HttpMethod method) throws IOException {
+        String response = method.getResponseBodyAsString();
+        if ( response == null ) {
+            return;
+        }
+        Pattern pattern = Pattern.compile("name='csrfmiddlewaretoken' value='(\\w+)'");
+        Matcher matcher = pattern.matcher(response);
+        if (matcher.find()) {
+            crfToken = matcher.group(1);
+        }
     }
 
     private void executeMethod(HttpMethod method) throws IOException {
