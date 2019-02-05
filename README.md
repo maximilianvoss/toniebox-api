@@ -34,26 +34,26 @@ import java.util.List;
 import java.util.Properties;
 
 public class Application {
-	public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
-		TonieHandler tonieHandler = new TonieHandler("USERNAME", "PASSWORD");
-		List<Tonie> tonies = tonieHandler.getTonies();
+        TonieHandler tonieHandler = new TonieHandler("USERNAME", "PASSWORD");
+        List<Tonie> tonies = tonieHandler.getTonies();
 
-		for (Tonie tonie : tonies) {
-			if (StringUtils.equals(tonie.getTonieName(), "TONIES NAME")) {
-			    
-			    // delete entire content from the Tonie
-				tonieHandler.deleteTonieContent(tonie);
+        for (Tonie tonie : tonies) {
+            if (StringUtils.equals(tonie.getTonieName(), "TONIES NAME")) {
+                
+                // delete entire content from the Tonie
+                tonieHandler.deleteTonieContent(tonie);
+    
+                // rename the Tonie
+                tonieHandler.changeTonieName(tonie, "Tonies New Name");
 				
-				// rename the Tonie
-				tonieHandler.changeTonieName(tonie, "Tonies New Name");
-				
-				// upload file to Tonie
-				tonieHandler.uploadFile(tonie, "New Track", "PATH_TO_MP3.mp3");
-				return;
-			}
-		}
-	}
+                // upload file to Tonie
+                tonieHandler.uploadFile(tonie, "New Track", "PATH_TO_MP3.mp3");
+                return;
+            }
+        }
+    }
 }
 
 ```
