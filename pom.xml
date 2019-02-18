@@ -66,4 +66,12 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>oss-sonatype-release</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </repository>
+    </distributionManagement>
 </project>
