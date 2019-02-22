@@ -1,5 +1,6 @@
 package rocks.voss.toniebox;
 
+import org.apache.log4j.Logger;
 import rocks.voss.toniebox.beans.Tonie;
 import rocks.voss.toniebox.beans.amazon.AmazonBean;
 import rocks.voss.toniebox.beans.toniebox.TonieContentBean;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class TonieHandler {
+    private Logger log = Logger.getLogger(getClass().getName());
     private final RequestHandler requestHandler = new RequestHandler();
 
     /**
@@ -76,6 +78,7 @@ public class TonieHandler {
      * @throws IOException will be thrown if something goes wrong
      */
     public void uploadFile(Tonie tonie, String title, String path) throws IOException {
+        log.debug("Tonie: " + tonie + ", Title: " + title + ", Path: " + path);
         TonieContentBean tonieContentBean = getTonieDetails(tonie);
 
         AmazonBean amazonBean = requestHandler.getAmazonCredentials();

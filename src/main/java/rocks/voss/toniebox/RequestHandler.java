@@ -9,6 +9,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.log4j.Logger;
 import rocks.voss.toniebox.beans.Tonie;
 import rocks.voss.toniebox.beans.amazon.AmazonBean;
 import rocks.voss.toniebox.beans.toniebox.TonieContentBean;
@@ -16,12 +17,15 @@ import rocks.voss.toniebox.beans.toniebox.TonieUpdateBean;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class RequestHandler {
+    private Logger log = Logger.getLogger(getClass().getName());
+
     private HttpClient httpClient = new HttpClient();
     private Cookie[] cookies;
     private String crfToken;
@@ -29,6 +33,7 @@ class RequestHandler {
     protected void Login(String login, String password) throws IOException {
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.LOGIN_PAGE));
         executeMethod(getMethod);
+        log.debug("Status Code: " + getMethod.getStatusCode());
 
         PostMethod postMethod = new PostMethod(URLBuilder.getTonieUrl(Constants.LOGIN_PAGE));
         postMethod.getParams().setCookiePolicy(org.apache.commons.httpclient.cookie.CookiePolicy.BROWSER_COMPATIBILITY);
@@ -39,6 +44,7 @@ class RequestHandler {
         postMethod.setParameter("password", password);
         postMethod.setParameter("submit", "Login+now");
         executeMethod(postMethod);
+        log.debug("Status Code: " + postMethod.getStatusCode());
     }
 
     protected List<Tonie> getTonies() throws IOException {
@@ -46,6 +52,7 @@ class RequestHandler {
 
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.SUMMARY_PAGE));
         executeMethod(getMethod);
+        log.debug("Status Code: " + getMethod.getStatusCode());
 
         Pattern pattern = Pattern.compile("<a href=\"/tonies/(\\w+)/\" title=.+\n\\s+<span>(.+)</span>");
         Matcher matcher = pattern.matcher(getMethod.getResponseBodyAsString());
@@ -53,6 +60,7 @@ class RequestHandler {
             Tonie tonie = new Tonie();
             tonie.setTonieId(matcher.group(1));
             tonie.setName(matcher.group(2));
+            log.debug("Tonie found: " + tonie);
             tonies.add(tonie);
         }
         return tonies;
@@ -61,12 +69,15 @@ class RequestHandler {
     protected void getToniePage(Tonie tonie) throws IOException {
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.TONIE_PAGE, tonie));
         executeMethod(getMethod);
+        log.debug("Status Code: " + getMethod.getStatusCode());
     }
 
     protected TonieContentBean getTonieDetails(Tonie tonie) throws IOException {
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.TONIE_CONTENT, tonie));
         executeMethod(getMethod);
-        return TonieContentBean.createBean(getMethod.getResponseBodyAsString());
+        log.debug("Status Code: " + getMethod.getStatusCode());
+        byte[] responseByte = getMethod.getResponseBody();
+        return TonieContentBean.createBean(new String(responseByte, StandardCharsets.UTF_8));
     }
 
     protected void updateTonie(Tonie tonie, TonieUpdateBean updateBean) throws IOException {
@@ -74,17 +85,20 @@ class RequestHandler {
         putMethod.setRequestHeader("X-CSRFToken", crfToken);
         putMethod.setRequestEntity(new StringRequestEntity(updateBean.getJson().toString(), "application/json", "UTF-8"));
         executeMethod(putMethod);
+        log.debug("Status Code: " + putMethod.getStatusCode());
     }
 
     protected void changeTonieName(Tonie tonie, String name) throws IOException {
         PostMethod postMethod = new PostMethod(URLBuilder.getTonieUrl(Constants.TONIE_NAME, tonie));
         postMethod.setRequestBody(new NameValuePair[]{new NameValuePair("csrfmiddlewaretoken", crfToken), new NameValuePair("name", name)});
         executeMethod(postMethod);
+        log.debug("Status Code: " + postMethod.getStatusCode());
     }
 
     protected AmazonBean getAmazonCredentials() throws IOException {
         GetMethod getMethod = new GetMethod(URLBuilder.getTonieUrl(Constants.TONIE_AMAZON_PRE_SIGNED_URL, crfToken));
         executeMethod(getMethod);
+        log.debug("Status Code: " + getMethod.getStatusCode());
         return AmazonBean.createBean(getMethod.getResponseBodyAsString());
     }
 
@@ -103,10 +117,12 @@ class RequestHandler {
 
         postMethod.setRequestEntity(new MultipartRequestEntity(parts, postMethod.getParams()));
         executeMethod(postMethod);
+        log.debug("Status Code: " + postMethod.getStatusCode());
     }
 
     private void extractCRFToken(HttpMethod method) throws IOException {
         String response = method.getResponseBodyAsString();
+        log.trace("Response: " + response);
         if ( response == null ) {
             return;
         }
@@ -114,6 +130,7 @@ class RequestHandler {
         Matcher matcher = pattern.matcher(response);
         if (matcher.find()) {
             crfToken = matcher.group(1);
+            log.debug("CRF Token: " + crfToken);
         }
     }
 
