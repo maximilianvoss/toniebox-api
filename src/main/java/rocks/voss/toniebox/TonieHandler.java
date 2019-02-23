@@ -1,5 +1,6 @@
 package rocks.voss.toniebox;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import rocks.voss.toniebox.beans.Tonie;
 import rocks.voss.toniebox.beans.amazon.AmazonBean;
@@ -9,6 +10,8 @@ import rocks.voss.toniebox.beans.toniebox.TonieUpdateBean;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TonieHandler {
@@ -17,6 +20,7 @@ public class TonieHandler {
 
     /**
      * Constructor to initialize the TonieHandler to run any action on your tonies
+     *
      * @param username for your Tonie Account
      * @param password for your Tonie Account
      * @throws IOException will be thrown if something goes wrong
@@ -27,6 +31,7 @@ public class TonieHandler {
 
     /**
      * This method loads all available Tonies you may want to interact with
+     *
      * @return a list of Tonies
      * @throws IOException will be thrown if something goes wrong
      */
@@ -36,6 +41,7 @@ public class TonieHandler {
 
     /**
      * This methods gives you all the details of the Tonies which is stored in the web (like chapters, etc)
+     *
      * @param tonie you want to know more about
      * @return detailed Tonie information
      * @throws IOException will be thrown if something goes wrong
@@ -47,6 +53,7 @@ public class TonieHandler {
 
     /**
      * This method deletes the entire content stored on the tonie
+     *
      * @param tonie you want to erase
      * @throws IOException will be thrown if something goes wrong
      */
@@ -60,9 +67,48 @@ public class TonieHandler {
     }
 
     /**
+     * This methods delete a specific chapter from the tonie
+     * @param tonie on which you want to delete the chapter
+     * @param chapter chapter to delte
+     * @throws IOException will be thrown if something goes wrong
+     */
+    public void deleteChapter(Tonie tonie, TonieChapterBean chapter) throws IOException {
+        TonieContentBean tonieContentBean = getTonieDetails(tonie);
+        TonieUpdateBean tonieUpdateBean = new TonieUpdateBean();
+        tonieUpdateBean.setContent(tonieContentBean.getData());
+
+        List<TonieChapterBean> chapters = new ArrayList<>();
+        for (TonieChapterBean chapterIter : tonieContentBean.getData().getChapters()) {
+            if (! StringUtils.equals(chapterIter.getIdentifier(), chapter.getIdentifier())) {
+                chapters.add(chapterIter);
+            }
+        }
+
+        tonieUpdateBean.setDeletedChapters(new TonieChapterBean[]{chapter});
+        tonieUpdateBean.setCurrentChapters(chapters.toArray(new TonieChapterBean[]{}));
+        requestHandler.updateTonie(tonie, tonieUpdateBean);
+    }
+
+    /**
+     * This method updates the chatpers of a tonie
+     * @param tonie on which the chapters shall be updated
+     * @param chapters updated chapters' data
+     * @throws IOException will be thrown if something goes wrong
+     */
+    public void updateChapters(Tonie tonie, TonieChapterBean[] chapters) throws IOException {
+        TonieContentBean tonieContentBean = getTonieDetails(tonie);
+        TonieUpdateBean tonieUpdateBean = new TonieUpdateBean();
+        tonieUpdateBean.setContent(tonieContentBean.getData());
+        tonieUpdateBean.setDeletedChapters(new TonieChapterBean[]{});
+        tonieUpdateBean.setCurrentChapters(chapters);
+        requestHandler.updateTonie(tonie, tonieUpdateBean);
+    }
+
+    /**
      * Tbis method can change the tonies name
+     *
      * @param tonie whose name you wnat to change
-     * @param name you want to set
+     * @param name  you want to set
      * @throws IOException will be thrown if something goes wrong
      */
     public void changeTonieName(Tonie tonie, String name) throws IOException {
@@ -72,9 +118,10 @@ public class TonieHandler {
 
     /**
      * This method uploads a new file to the associated Tonie
+     *
      * @param tonie to which you want to bind the new uploaded file
      * @param title you want to set, visible on the my tonie website
-     * @param path to the file you want to upload
+     * @param path  to the file you want to upload
      * @throws IOException will be thrown if something goes wrong
      */
     public void uploadFile(Tonie tonie, String title, String path) throws IOException {
