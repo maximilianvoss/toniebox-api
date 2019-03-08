@@ -15,48 +15,13 @@ mvn clean install
     <dependency>
         <groupId>rocks.voss</groupId>
         <artifactId>toniebox-api</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>2.0</version>
     </dependency>
 </dependencies>
 ```
 
 # Getting Started
-```Java
-package rocks.voss;
-
-import org.apache.commons.lang3.StringUtils;
-import rocks.voss.toniebox.beans.Tonie;
-import rocks.voss.toniebox.TonieHandler;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
-
-public class Application {
-    public static void main(String[] args) throws IOException {
-
-        TonieHandler tonieHandler = new TonieHandler("USERNAME", "PASSWORD");
-        List<Tonie> tonies = tonieHandler.getTonies();
-
-        for (Tonie tonie : tonies) {
-            if (StringUtils.equals(tonie.getTonieName(), "TONIES NAME")) {
-                
-                // delete entire content from the Tonie
-                tonieHandler.deleteTonieContent(tonie);
-    
-                // rename the Tonie
-                tonieHandler.changeTonieName(tonie, "Tonies New Name");
-				
-                // upload file to Tonie
-                tonieHandler.uploadFile(tonie, "New Track", "PATH_TO_MP3.mp3");
-                return;
-            }
-        }
-    }
-}
-
-```
+See code in [example/src/main/java/rocks/voss/toniebox/example/Application.java]
 
 # Known Issues
 No issues known yet

@@ -1,149 +1,78 @@
 package rocks.voss.toniebox;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import rocks.voss.toniebox.beans.Tonie;
-import rocks.voss.toniebox.beans.amazon.AmazonBean;
-import rocks.voss.toniebox.beans.toniebox.TonieContentBean;
-import rocks.voss.toniebox.beans.toniebox.TonieChapterBean;
-import rocks.voss.toniebox.beans.toniebox.TonieUpdateBean;
+import rocks.voss.toniebox.beans.toniebox.CreativeTonie;
+import rocks.voss.toniebox.beans.toniebox.Household;
+import rocks.voss.toniebox.beans.toniebox.Login;
+import rocks.voss.toniebox.beans.toniebox.Me;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class TonieHandler {
     private Logger log = Logger.getLogger(getClass().getName());
-    private final RequestHandler requestHandler = new RequestHandler();
+    private RequestHandler requestHandler = null;
+
+    /**
+     * Default constructor
+     */
+    public TonieHandler() {
+        requestHandler = new RequestHandler();
+    }
+
+    /**
+     * Constructor for Proxy usage
+     * @param proxySchema http/https
+     * @param proxyHost to which proxy host to connect
+     * @param proxyPort port on which the proxy listens
+     */
+    public TonieHandler(String proxySchema, String proxyHost, int proxyPort) {
+        requestHandler = new RequestHandler(proxySchema, proxyHost, proxyPort);
+    }
 
     /**
      * Constructor to initialize the TonieHandler to run any action on your tonies
      *
-     * @param username for your Tonie Account
-     * @param password for your Tonie Account
+     * @param username for your Toniebox Account
+     * @param password for your Toniebox Account
      * @throws IOException will be thrown if something goes wrong
      */
     public TonieHandler(String username, String password) throws IOException {
-        requestHandler.Login(username, password);
+        Login loginBean = new Login();
+        loginBean.setEmail(username);
+        loginBean.setPassword(password);
+        requestHandler.Login(loginBean);
+    }
+
+    /**
+     * This method retieves the households you're in
+     *
+     * @return list of households
+     * @throws IOException will be thrown if something goes wrong
+     */
+    public List<Household> getHouseholds() throws IOException {
+        return Arrays.asList(requestHandler.getHouseholds());
     }
 
     /**
      * This method loads all available Tonies you may want to interact with
      *
-     * @return a list of Tonies
+     * @param household the household to which the Tonie belongs
+     * @return a list of CreativeTonies
      * @throws IOException will be thrown if something goes wrong
      */
-    public List<Tonie> getTonies() throws IOException {
-        return requestHandler.getTonies();
+    public List<CreativeTonie> getCreativeTonies(Household household) throws IOException {
+        return Arrays.asList(requestHandler.getCreativeTonies(household));
     }
 
     /**
-     * This methods gives you all the details of the Tonies which is stored in the web (like chapters, etc)
+     * This method retrieves your personal information
      *
-     * @param tonie you want to know more about
-     * @return detailed Tonie information
+     * @return personal information
      * @throws IOException will be thrown if something goes wrong
      */
-    public TonieContentBean getTonieDetails(Tonie tonie) throws IOException {
-        requestHandler.getToniePage(tonie);
-        return requestHandler.getTonieDetails(tonie);
-    }
-
-    /**
-     * This method deletes the entire content stored on the tonie
-     *
-     * @param tonie you want to erase
-     * @throws IOException will be thrown if something goes wrong
-     */
-    public void deleteTonieContent(Tonie tonie) throws IOException {
-        TonieContentBean tonieContentBean = getTonieDetails(tonie);
-        TonieUpdateBean tonieUpdateBean = new TonieUpdateBean();
-        tonieUpdateBean.setContent(tonieContentBean.getData());
-        tonieUpdateBean.setDeletedChapters(tonieContentBean.getData().getChapters());
-        tonieUpdateBean.setCurrentChapters(new TonieChapterBean[]{});
-        requestHandler.updateTonie(tonie, tonieUpdateBean);
-    }
-
-    /**
-     * This methods delete a specific chapter from the tonie
-     * @param tonie on which you want to delete the chapter
-     * @param chapter chapter to delte
-     * @throws IOException will be thrown if something goes wrong
-     */
-    public void deleteChapter(Tonie tonie, TonieChapterBean chapter) throws IOException {
-        TonieContentBean tonieContentBean = getTonieDetails(tonie);
-        TonieUpdateBean tonieUpdateBean = new TonieUpdateBean();
-        tonieUpdateBean.setContent(tonieContentBean.getData());
-
-        List<TonieChapterBean> chapters = new ArrayList<>();
-        for (TonieChapterBean chapterIter : tonieContentBean.getData().getChapters()) {
-            if (! StringUtils.equals(chapterIter.getIdentifier(), chapter.getIdentifier())) {
-                chapters.add(chapterIter);
-            }
-        }
-
-        tonieUpdateBean.setDeletedChapters(new TonieChapterBean[]{chapter});
-        tonieUpdateBean.setCurrentChapters(chapters.toArray(new TonieChapterBean[]{}));
-        requestHandler.updateTonie(tonie, tonieUpdateBean);
-    }
-
-    /**
-     * This method updates the chatpers of a tonie
-     * @param tonie on which the chapters shall be updated
-     * @param chapters updated chapters' data
-     * @throws IOException will be thrown if something goes wrong
-     */
-    public void updateChapters(Tonie tonie, TonieChapterBean[] chapters) throws IOException {
-        TonieContentBean tonieContentBean = getTonieDetails(tonie);
-        TonieUpdateBean tonieUpdateBean = new TonieUpdateBean();
-        tonieUpdateBean.setContent(tonieContentBean.getData());
-        tonieUpdateBean.setDeletedChapters(new TonieChapterBean[]{});
-        tonieUpdateBean.setCurrentChapters(chapters);
-        requestHandler.updateTonie(tonie, tonieUpdateBean);
-    }
-
-    /**
-     * Tbis method can change the tonies name
-     *
-     * @param tonie whose name you wnat to change
-     * @param name  you want to set
-     * @throws IOException will be thrown if something goes wrong
-     */
-    public void changeTonieName(Tonie tonie, String name) throws IOException {
-        getTonieDetails(tonie);
-        requestHandler.changeTonieName(tonie, name);
-    }
-
-    /**
-     * This method uploads a new file to the associated Tonie
-     *
-     * @param tonie to which you want to bind the new uploaded file
-     * @param title you want to set, visible on the my tonie website
-     * @param path  to the file you want to upload
-     * @throws IOException will be thrown if something goes wrong
-     */
-    public void uploadFile(Tonie tonie, String title, String path) throws IOException {
-        log.debug("Tonie: " + tonie + ", Title: " + title + ", Path: " + path);
-        TonieContentBean tonieContentBean = getTonieDetails(tonie);
-
-        AmazonBean amazonBean = requestHandler.getAmazonCredentials();
-        requestHandler.uploadFile(amazonBean, new File(path));
-
-        TonieUpdateBean tonieUpdateBean = new TonieUpdateBean();
-        tonieUpdateBean.setContent(tonieContentBean.getData());
-        tonieUpdateBean.setDeletedChapters(new TonieChapterBean[]{});
-
-        int chapterSize = tonieContentBean.getData().getChapters().length;
-        TonieChapterBean chapters[] = new TonieChapterBean[chapterSize + 1];
-        System.arraycopy(tonieContentBean.getData().getChapters(), 0, chapters, 0, chapterSize);
-        chapters[chapterSize] = new TonieChapterBean();
-        chapters[chapterSize].setTitle(title);
-        chapters[chapterSize].setFile(amazonBean.getUuid());
-        chapters[chapterSize].setPosition(chapterSize + 1);
-        tonieUpdateBean.setCurrentChapters(chapters);
-
-        requestHandler.updateTonie(tonie, tonieUpdateBean);
+    public Me getMe() throws IOException {
+        return requestHandler.getMe();
     }
 }

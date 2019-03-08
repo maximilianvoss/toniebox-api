@@ -3,10 +3,8 @@ package rocks.voss.toniebox.beans.amazon;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.io.Serializable;
-
 @Data
-public class FieldsBean implements Serializable {
+public class FieldsBean {
 	private String key;
 	private String policy;
 	@JsonProperty("x-amz-algorithm")
