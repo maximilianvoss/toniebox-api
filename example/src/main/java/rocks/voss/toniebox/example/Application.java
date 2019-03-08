@@ -17,7 +17,8 @@ public class Application {
     private final static String PASSWORD = "<YOUR TONIEBOX PASSWORD";
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        TonieHandler tonieHandler = new TonieHandler(USERNAME, PASSWORD);
+        TonieHandler tonieHandler = new TonieHandler();
+        tonieHandler.login(USERNAME, PASSWORD);
 
         // get what is stored about you as a person
         Me me = tonieHandler.getMe();

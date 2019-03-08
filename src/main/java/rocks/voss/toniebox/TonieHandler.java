@@ -12,7 +12,7 @@ import java.util.List;
 
 public class TonieHandler {
     private Logger log = Logger.getLogger(getClass().getName());
-    private RequestHandler requestHandler = null;
+    final private RequestHandler requestHandler;
 
     /**
      * Default constructor
@@ -32,13 +32,13 @@ public class TonieHandler {
     }
 
     /**
-     * Constructor to initialize the TonieHandler to run any action on your tonies
+     * Login the toniebox user
      *
      * @param username for your Toniebox Account
      * @param password for your Toniebox Account
      * @throws IOException will be thrown if something goes wrong
      */
-    public TonieHandler(String username, String password) throws IOException {
+    public void login(String username, String password) throws IOException {
         Login loginBean = new Login();
         loginBean.setEmail(username);
         loginBean.setPassword(password);
