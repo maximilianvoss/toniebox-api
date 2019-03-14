@@ -32,22 +32,16 @@ import java.io.IOException;
 public class RequestHandler {
     private Logger log = Logger.getLogger(getClass().getName());
 
-    final private CloseableHttpClient httpClient;
+    final private HttpHost proxy = null;
     private JWTToken jwtToken;
     private final Header[] headerContentTypeJson = new Header[]{new BasicHeader("Content-Type", "application/json")};
 
     public RequestHandler() {
-        httpClient = HttpClients.createDefault();
     }
 
     public RequestHandler(String proxySchema, String proxyHost, int proxyPort) {
         HttpHost proxy = new HttpHost(proxyHost, proxyPort, proxySchema);
-        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
-        httpClient = HttpClients.custom()
-                .setRoutePlanner(routePlanner)
-                .build();
     }
-
 
     public void Login(Login loginBean) throws IOException {
         jwtToken = executePostRequest(Constants.SESSION, headerContentTypeJson, new StringEntity(Transformer.getJsonString(loginBean), "UTF-8"), null, JWTToken.class);
@@ -145,11 +139,24 @@ public class RequestHandler {
         method.setConfig(requestConfig);
 
         log.debug(method.toString());
-        CloseableHttpResponse response = httpClient.execute(method);
+
+        CloseableHttpResponse response = null;
+        response = getHttpClient().execute(method);
         log.debug("Status Code: " + response.getStatusLine());
         if (clazz == null) {
             return null;
         }
         return Transformer.createBean(clazz, response.getEntity().getContent());
+    }
+
+    private CloseableHttpClient getHttpClient() {
+        if (proxy == null) {
+            return HttpClients.createDefault();
+        } else {
+            DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+            return HttpClients.custom()
+                    .setRoutePlanner(routePlanner)
+                    .build();
+        }
     }
 }
