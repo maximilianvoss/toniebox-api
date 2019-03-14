@@ -3,6 +3,7 @@ package rocks.voss.toniebox;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
@@ -130,9 +131,19 @@ public class RequestHandler {
     }
 
     private <T> T executeRequest(HttpRequestBase method, JWTToken jwtToken, Class<T> clazz) throws IOException {
+        int CONNECTION_TIMEOUT_MS = 5000;
+
         if (jwtToken != null) {
             method.addHeader("Authorization", "Bearer " + jwtToken.getJwt());
         }
+
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(CONNECTION_TIMEOUT_MS)
+                .setConnectTimeout(CONNECTION_TIMEOUT_MS)
+                .setSocketTimeout(CONNECTION_TIMEOUT_MS)
+                .build();
+        method.setConfig(requestConfig);
+
         log.debug(method.toString());
         CloseableHttpResponse response = httpClient.execute(method);
         log.debug("Status Code: " + response.getStatusLine());
