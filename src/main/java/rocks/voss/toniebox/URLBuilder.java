@@ -10,7 +10,7 @@ class URLBuilder {
     }
 
     static String getUrl(final String URLConstant, CreativeTonie creativeTonie) {
-        return getUrl(URLConstant, null, creativeTonie);
+        return getUrl(URLConstant, creativeTonie.getHousehold(), creativeTonie);
     }
 
     private static String getUrl(final String URLConstant, Household household, CreativeTonie creativeTonie) {
