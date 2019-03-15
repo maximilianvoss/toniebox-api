@@ -30,9 +30,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class RequestHandler {
-    private Logger log = Logger.getLogger(getClass().getName());
+    private final Logger log = Logger.getLogger(getClass().getName());
 
-    final private HttpHost proxy = null;
+    private HttpHost proxy = null;
     private JWTToken jwtToken;
     private final Header[] headerContentTypeJson = new Header[]{new BasicHeader("Content-Type", "application/json")};
 
@@ -40,7 +40,7 @@ public class RequestHandler {
     }
 
     public RequestHandler(String proxySchema, String proxyHost, int proxyPort) {
-        HttpHost proxy = new HttpHost(proxyHost, proxyPort, proxySchema);
+        this.proxy = new HttpHost(proxyHost, proxyPort, proxySchema);
     }
 
     public void Login(Login loginBean) throws IOException {
@@ -65,13 +65,13 @@ public class RequestHandler {
     }
 
     public CreativeTonie refreshTonie(CreativeTonie tonie) throws IOException {
-        CreativeTonie returnTonie = executeGetRequest(URLBuilder.getUrl(Constants.CREATIVE_TONIE, tonie.getHousehold(), tonie), jwtToken, CreativeTonie.class);
+        CreativeTonie returnTonie = executeGetRequest(URLBuilder.getUrl(Constants.CREATIVE_TONIE, tonie), jwtToken, CreativeTonie.class);
         returnTonie.setHousehold(tonie.getHousehold());
         return returnTonie;
     }
 
     public void commitTonie(CreativeTonie tonie) throws IOException {
-        executePatchRequest(URLBuilder.getUrl(Constants.CREATIVE_TONIE, tonie.getHousehold(), tonie), headerContentTypeJson, new StringEntity(Transformer.getJsonString(tonie), "UTF-8"), jwtToken, null);
+        executePatchRequest(URLBuilder.getUrl(Constants.CREATIVE_TONIE, tonie), headerContentTypeJson, new StringEntity(Transformer.getJsonString(tonie), "UTF-8"), jwtToken, null);
     }
 
     public void uploadFile(CreativeTonie tonie, File file, String title) throws IOException {
@@ -92,7 +92,7 @@ public class RequestHandler {
         executePostRequest(Constants.FILE_UPLOAD_AMAZON, null, entity, null, null);
 
         int chapterSize = tonie.getChapters().length;
-        Chapter chapters[] = new Chapter[chapterSize + 1];
+        Chapter[] chapters = new Chapter[chapterSize + 1];
         System.arraycopy(tonie.getChapters(), 0, chapters, 0, chapterSize);
         chapters[chapterSize] = new Chapter();
         chapters[chapterSize].setTitle(title);
@@ -140,7 +140,7 @@ public class RequestHandler {
 
         log.debug(method.toString());
 
-        CloseableHttpResponse response = null;
+        CloseableHttpResponse response;
         response = getHttpClient().execute(method);
         log.debug("Status Code: " + response.getStatusLine());
         if (clazz == null) {

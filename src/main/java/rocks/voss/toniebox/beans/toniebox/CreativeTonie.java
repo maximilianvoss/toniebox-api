@@ -50,10 +50,9 @@ public class CreativeTonie {
      * Deletes a chapter from the tonie
      *
      * @param chapter to be delete
-     * @throws IOException will be thrown if something goes wrong
      */
     @JsonIgnore
-    public void deleteChapter(Chapter chapter) throws IOException {
+    public void deleteChapter(Chapter chapter) {
         List<Chapter> chapters = new ArrayList<>();
         for (Chapter chapterIter : this.chapters) {
             if (!StringUtils.equals(chapterIter.getId(), chapter.getId())) {
@@ -77,11 +76,30 @@ public class CreativeTonie {
 
     /**
      * Save all changes to tonie
-     *
      * @throws IOException will be thrown if something goes wrong
      */
     @JsonIgnore
     public void commit() throws IOException {
         requestHandler.commitTonie(this);
+    }
+
+    /**
+     * Refetch the newest updates on the tonie from the webserver
+     * @throws IOException will be thrown is something goes wrong
+     */
+    @JsonIgnore
+    public void refresh() throws IOException {
+       CreativeTonie tmp =  requestHandler.refreshTonie(this);
+       this.setId(tmp.getId());
+       this.setName(tmp.getName());
+       this.setLive(tmp.isLive());
+       this.setPrivate(tmp.isPrivate);
+       this.setImageUrl(tmp.getImageUrl());
+       this.setTranscoding(tmp.isTranscoding());
+       this.setSecondsPresent(tmp.getSecondsPresent());
+       this.setSecondsRemaining(tmp.getChaptersRemaining());
+       this.setChaptersPresent(tmp.getChaptersPresent());
+       this.setChaptersRemaining(tmp.getChaptersRemaining());
+       this.setChapters(tmp.getChapters());
     }
 }

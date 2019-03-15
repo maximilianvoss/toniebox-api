@@ -1,6 +1,5 @@
 package rocks.voss.toniebox;
 
-import org.apache.log4j.Logger;
 import rocks.voss.toniebox.beans.toniebox.CreativeTonie;
 import rocks.voss.toniebox.beans.toniebox.Household;
 import rocks.voss.toniebox.beans.toniebox.Login;
@@ -11,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TonieHandler {
-    private Logger log = Logger.getLogger(getClass().getName());
     final private RequestHandler requestHandler;
 
     /**
