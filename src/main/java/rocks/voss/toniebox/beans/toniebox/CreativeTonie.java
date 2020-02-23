@@ -17,6 +17,7 @@ public class CreativeTonie {
     private boolean live;
     private boolean isPrivate;
     private String imageUrl;
+    private String[] transcodingErrors;
     private boolean transcoding;
     private float secondsPresent;
     private float secondsRemaining;
