@@ -10,4 +10,5 @@ public class Household {
     private boolean foreignCreativeTonieContent;
     private String access;
     private boolean canLeave;
+    private String ownerName;
 }
