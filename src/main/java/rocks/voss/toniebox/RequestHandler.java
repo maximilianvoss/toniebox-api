@@ -5,6 +5,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -101,8 +102,17 @@ public class RequestHandler {
         tonie.setChapters(chapters);
     }
 
+    public void disconnect() throws IOException {
+        executeDeleteRequest(Constants.SESSION, jwtToken, null);
+    }
+
     private <T> T executeGetRequest(String URI, JWTToken jwtToken, Class<T> clazz) throws IOException {
         HttpGet method = new HttpGet(URI);
+        return executeRequest(method, jwtToken, clazz);
+    }
+
+    private <T> T executeDeleteRequest(String URI, JWTToken jwtToken, Class<T> clazz) throws IOException {
+        HttpDelete method = new HttpDelete(URI);
         return executeRequest(method, jwtToken, clazz);
     }
 

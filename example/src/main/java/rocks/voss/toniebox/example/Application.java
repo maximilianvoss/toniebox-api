@@ -64,5 +64,7 @@ public class Application {
         creativeTonie.commit();
         creativeTonie.setName(oldName);
         creativeTonie.commit();
+
+        tonieHandler.disconnect();
     }
 }

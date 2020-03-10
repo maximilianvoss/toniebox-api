@@ -73,4 +73,12 @@ public class TonieHandler {
     public Me getMe() throws IOException {
         return requestHandler.getMe();
     }
+
+    /**
+     * This method disconnects and destroies the sessoin from Tonie
+     * @throws IOException
+     */
+    public void disconnect() throws IOException {
+        requestHandler.disconnect();
+    }
 }
