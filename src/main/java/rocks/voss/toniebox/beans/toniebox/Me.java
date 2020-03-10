@@ -17,5 +17,8 @@ public class Me {
     @JsonProperty("isVerified")
     private boolean verified;
     private String locale;
+    @JsonProperty("isEduUser")
+    private boolean eduUser;
     private int notificationCount;
+    private boolean requiresVerificationToUpload;
 }
