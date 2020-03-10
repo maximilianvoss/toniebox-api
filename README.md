@@ -22,6 +22,12 @@ mvn clean install
 
 # Getting Started
 See code in [example/src/main/java/rocks/voss/toniebox/example/Application.java]
+Code can be build with
+```bash
+cd example
+mvn clean install
+java -jar target/toniebox-api-example-*.jar
+```
 
 # Known Issues
 No issues known yet
