@@ -15,7 +15,7 @@ mvn clean install
     <dependency>
         <groupId>rocks.voss</groupId>
         <artifactId>toniebox-api</artifactId>
-        <version>2.0</version>
+        <version>2.5</version>
     </dependency>
 </dependencies>
 ```
