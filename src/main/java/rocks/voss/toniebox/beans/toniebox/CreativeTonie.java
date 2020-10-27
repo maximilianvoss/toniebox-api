@@ -24,6 +24,7 @@ public class CreativeTonie {
     private int chaptersPresent;
     private int chaptersRemaining;
     private Chapter[] chapters;
+    private String householdId;
 
     @JsonIgnore
     private Household household;
@@ -102,5 +103,6 @@ public class CreativeTonie {
        this.setChaptersPresent(tmp.getChaptersPresent());
        this.setChaptersRemaining(tmp.getChaptersRemaining());
        this.setChapters(tmp.getChapters());
+       this.setHouseholdId(tmp.getHouseholdId());
     }
 }
