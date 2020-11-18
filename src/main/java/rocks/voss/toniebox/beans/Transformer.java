@@ -1,5 +1,6 @@
 package rocks.voss.toniebox.beans;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
@@ -18,7 +19,9 @@ public class Transformer {
 
     private static <T> T createBean(Class<T> clazz, String json) throws IOException {
         log.debug("Json: " + json);
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         JsonNode jsonNode = mapper.readValue(json, JsonNode.class);
         return mapper.treeToValue(jsonNode, clazz);
     }

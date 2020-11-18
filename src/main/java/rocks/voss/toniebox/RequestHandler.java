@@ -1,9 +1,12 @@
 package rocks.voss.toniebox;
 
+import lombok.SneakyThrows;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -17,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import rocks.voss.toniebox.beans.Transformer;
 import rocks.voss.toniebox.beans.amazon.AmazonBean;
@@ -29,6 +33,8 @@ import rocks.voss.toniebox.beans.toniebox.Me;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RequestHandler {
     private final Logger log = Logger.getLogger(getClass().getName());
@@ -45,7 +51,23 @@ public class RequestHandler {
     }
 
     public void Login(Login loginBean) throws IOException {
-        jwtToken = executePostRequest(Constants.SESSION, headerContentTypeJson, new StringEntity(Transformer.getJsonString(loginBean), "UTF-8"), null, JWTToken.class);
+        jwtToken = executeLoginRequest(loginBean);
+    }
+
+    @SneakyThrows
+    private JWTToken executeLoginRequest(Login loginBean) {
+        HttpPost post = new HttpPost(Constants.OPENID_CONNECT);
+        post.addHeader("Content-Type","application/x-www-form-urlencoded");
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("grant_type", "password"));
+        params.add(new BasicNameValuePair("client_id", "my-tonies"));
+        params.add(new BasicNameValuePair("scope", "openid"));
+        params.add(new BasicNameValuePair("username", loginBean.getEmail()));
+        params.add(new BasicNameValuePair("password", loginBean.getPassword()));
+        post.setEntity(new UrlEncodedFormEntity(params));
+        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpResponse response = client.execute(post);
+        return Transformer.createBean(JWTToken.class, response.getEntity().getContent());
     }
 
     public Me getMe() throws IOException {
@@ -138,7 +160,7 @@ public class RequestHandler {
         int CONNECTION_TIMEOUT_MS = 5000;
 
         if (jwtToken != null) {
-            method.addHeader("Authorization", "Bearer " + jwtToken.getJwt());
+            method.addHeader("Authorization", "Bearer " + jwtToken.getAccessToken());
         }
 
         RequestConfig requestConfig = RequestConfig.custom()

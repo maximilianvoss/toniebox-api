@@ -1,6 +1,7 @@
 package rocks.voss.toniebox;
 
 class Constants {
+	final static String OPENID_CONNECT = "https://login.tonies.com/auth/realms/tonies/protocol/openid-connect/token";
     final static String CREATIVE_TONIES = "https://api.tonie.cloud/v2/households/%h/creativetonies";
     final static String CREATIVE_TONIE = "https://api.tonie.cloud/v2/households/%h/creativetonies/%t";
     final static String SESSION = "https://api.tonie.cloud/v2/sessions";
