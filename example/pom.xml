@@ -6,7 +6,7 @@
 
     <groupId>rocks.voss</groupId>
     <artifactId>toniebox-api-example</artifactId>
-    <version>2.7-SNAPSHOT</version>
+    <version>2.7</version>
     <name>Toniebox API Example</name>
 
     <properties>
