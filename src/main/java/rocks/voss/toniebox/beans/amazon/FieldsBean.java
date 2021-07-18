@@ -15,4 +15,6 @@ public class FieldsBean {
 	private String xAmzDate;
 	@JsonProperty("x-amz-signature")
 	private String xAmzSignature;
+	@JsonProperty("x-amz-security-token")
+	private String xAmzSecurityToken;
 }
