@@ -75,8 +75,9 @@ public class TonieHandler {
     }
 
     /**
-     * This method disconnects and destroies the sessoin from Tonie
-     * @throws IOException
+     * This method disconnects and destroys the session from Tonie
+     *
+     * @throws IOException if the request failed
      */
     public void disconnect() throws IOException {
         requestHandler.disconnect();

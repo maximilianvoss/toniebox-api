@@ -6,7 +6,7 @@
 
     <groupId>rocks.voss</groupId>
     <artifactId>toniebox-api</artifactId>
-    <version>2.8-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
     <name>Toniebox API</name>
     <url>https://maximilian.voss.rocks</url>
 
@@ -37,20 +37,20 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.7</version>
+            <version>4.5.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>4.5.7</version>
+            <version>4.5.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -75,8 +75,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.4</version>
-            <scope>provided</scope>
+            <version>1.18.22</version>
         </dependency>
     </dependencies>
 
@@ -94,6 +93,18 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
+                    <configuration>
+                        <release>11</release>
+                        <source>11</source>
+                        <target>11</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>1.18.22</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -119,7 +130,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
+                    <version>3.3.1</version>
                     <executions>
                         <execution>
                             <id>attach-javadocs</id>

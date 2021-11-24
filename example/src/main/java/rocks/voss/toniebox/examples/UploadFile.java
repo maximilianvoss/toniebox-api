@@ -1,28 +1,20 @@
-package rocks.voss.toniebox.example;
+package rocks.voss.toniebox.examples;
 
 import org.apache.commons.io.IOUtils;
 import rocks.voss.toniebox.TonieHandler;
 import rocks.voss.toniebox.beans.toniebox.Chapter;
 import rocks.voss.toniebox.beans.toniebox.CreativeTonie;
 import rocks.voss.toniebox.beans.toniebox.Household;
-import rocks.voss.toniebox.beans.toniebox.Me;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class Application {
-    private final static String USERNAME = "<YOUR TONIEBOX USERNAME>";
-    private final static String PASSWORD = "<YOUR TONIEBOX PASSWORD";
-
+public class UploadFile {
     public static void main(String[] args) throws IOException {
         TonieHandler tonieHandler = new TonieHandler();
-        tonieHandler.login(USERNAME, PASSWORD);
-
-        // get what is stored about you as a person
-        Me me = tonieHandler.getMe();
-        System.out.println(me);
+        tonieHandler.login(Constants.USERNAME, Constants.PASSWORD);
 
         // get all households you're in & select first one
         List<Household> households = tonieHandler.getHouseholds();
@@ -57,13 +49,6 @@ public class Application {
         // Refresh and get the latest states of the tonie
         creativeTonie.refresh();
         System.out.println("Number of chapters on the tonie: " + creativeTonie.getChaptersPresent());
-
-        // rename the creative tonie and reset the name
-        String oldName = creativeTonie.getName();
-        creativeTonie.setName("--THIS IS A TEST NAME--");
-        creativeTonie.commit();
-        creativeTonie.setName(oldName);
-        creativeTonie.commit();
 
         tonieHandler.disconnect();
     }
