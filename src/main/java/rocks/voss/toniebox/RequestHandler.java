@@ -1,6 +1,7 @@
 package rocks.voss.toniebox;
 
 import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -33,10 +34,13 @@ import rocks.voss.toniebox.beans.toniebox.Me;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RequestHandler {
+
     private final Logger log = Logger.getLogger(getClass().getName());
 
     private HttpHost proxy = null;
@@ -57,7 +61,7 @@ public class RequestHandler {
     @SneakyThrows
     private JWTToken executeLoginRequest(Login loginBean) {
         HttpPost post = new HttpPost(Constants.OPENID_CONNECT);
-        post.addHeader("Content-Type","application/x-www-form-urlencoded");
+        post.addHeader("Content-Type", "application/x-www-form-urlencoded");
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("grant_type", "password"));
         params.add(new BasicNameValuePair("client_id", "my-tonies"));
@@ -94,7 +98,8 @@ public class RequestHandler {
     }
 
     public void commitTonie(CreativeTonie tonie) throws IOException {
-        executePatchRequest(URLBuilder.getUrl(Constants.CREATIVE_TONIE, tonie), headerContentTypeJson, new StringEntity(Transformer.getJsonString(tonie), "UTF-8"), jwtToken, null);
+        executePatchRequest(URLBuilder.getUrl(Constants.CREATIVE_TONIE, tonie), headerContentTypeJson,
+                new StringEntity(Transformer.getJsonString(tonie), "UTF-8"), jwtToken, null);
     }
 
     public void uploadFile(CreativeTonie tonie, File file, String title) throws IOException {
@@ -109,6 +114,7 @@ public class RequestHandler {
                 .addTextBody("x-amz-date", amazonBean.getRequest().getFields().getXAmzDate())
                 .addTextBody("policy", amazonBean.getRequest().getFields().getPolicy())
                 .addTextBody("x-amz-signature", amazonBean.getRequest().getFields().getXAmzSignature())
+                .addTextBody("x-amz-security-token", amazonBean.getRequest().getFields().getXAmzSecurityToken())
                 .addBinaryBody("file", file, ContentType.DEFAULT_BINARY, amazonBean.getRequest().getFields().getKey())
                 .build();
 
@@ -175,10 +181,18 @@ public class RequestHandler {
         CloseableHttpResponse response;
         response = getHttpClient().execute(method);
         log.debug("Status Code: " + response.getStatusLine());
-        if (clazz == null) {
+        HttpEntity entity = response.getEntity();
+        if (entity == null) {
             return null;
         }
-        return Transformer.createBean(clazz, response.getEntity().getContent());
+        try (InputStream inputStream = entity.getContent()) {
+            if (clazz == null) {
+                String body = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+                log.debug("Response body: " + body);
+                return null;
+            }
+            return Transformer.createBean(clazz, inputStream);
+        }
     }
 
     private CloseableHttpClient getHttpClient() {
