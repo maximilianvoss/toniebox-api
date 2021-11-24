@@ -6,7 +6,7 @@
 
     <groupId>rocks.voss</groupId>
     <artifactId>toniebox-api</artifactId>
-    <version>3.0</version>
+    <version>3.1-SNAPSHOT</version>
     <name>Toniebox API</name>
     <url>https://maximilian.voss.rocks</url>
 
