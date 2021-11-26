@@ -22,8 +22,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.Logger;
-import rocks.voss.toniebox.beans.Transformer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import rocks.voss.jsonhelper.JSONHelper;
 import rocks.voss.toniebox.beans.amazon.AmazonBean;
 import rocks.voss.toniebox.beans.toniebox.Chapter;
 import rocks.voss.toniebox.beans.toniebox.CreativeTonie;
@@ -41,7 +42,7 @@ import java.util.List;
 
 public class RequestHandler {
 
-    private final Logger log = Logger.getLogger(getClass().getName());
+    private final Logger log = LogManager.getLogger(getClass().getName());
 
     private HttpHost proxy = null;
     private JWTToken jwtToken;
@@ -71,7 +72,7 @@ public class RequestHandler {
         post.setEntity(new UrlEncodedFormEntity(params));
         CloseableHttpClient client = HttpClients.createDefault();
         CloseableHttpResponse response = client.execute(post);
-        return Transformer.createBean(JWTToken.class, response.getEntity().getContent());
+        return JSONHelper.createBean(JWTToken.class, response.getEntity().getContent());
     }
 
     public Me getMe() throws IOException {
@@ -99,7 +100,7 @@ public class RequestHandler {
 
     public void commitTonie(CreativeTonie tonie) throws IOException {
         executePatchRequest(URLBuilder.getUrl(Constants.CREATIVE_TONIE, tonie), headerContentTypeJson,
-                new StringEntity(Transformer.getJsonString(tonie), "UTF-8"), jwtToken, null);
+                new StringEntity(JSONHelper.getJsonString(tonie), "UTF-8"), jwtToken, null);
     }
 
     public void uploadFile(CreativeTonie tonie, File file, String title) throws IOException {
@@ -191,7 +192,7 @@ public class RequestHandler {
                 log.debug("Response body: " + body);
                 return null;
             }
-            return Transformer.createBean(clazz, inputStream);
+            return JSONHelper.createBean(clazz, inputStream);
         }
     }
 

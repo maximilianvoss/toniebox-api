@@ -63,14 +63,14 @@
             <version>2.7</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.13</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.14.1</version>
         </dependency>
         <dependency>
-            <groupId>com.github.fge</groupId>
-            <artifactId>jackson-coreutils</artifactId>
-            <version>1.8</version>
+            <groupId>rocks.voss</groupId>
+            <artifactId>jsonhelper</artifactId>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

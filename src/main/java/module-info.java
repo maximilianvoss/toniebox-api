@@ -6,10 +6,8 @@ module rocks.voss.toniebox.api {
     requires org.apache.commons.codec;
     requires org.apache.commons.io;
     requires commons.lang3;
-    requires log4j;
-    requires jackson.core;
-    requires jackson.annotations;
-    requires jackson.databind;
+    requires org.apache.logging.log4j;
+    requires rocks.voss.jsonhelper;
 
     exports rocks.voss.toniebox;
     exports rocks.voss.toniebox.beans.toniebox;
